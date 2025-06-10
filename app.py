@@ -37,11 +37,11 @@ questions = []
 # ================================
 @st.cache_resource
 def load_resources():
-    model = load_model("mal_tu_model.h5")
+    model = load_model("말투학습모델.h5") 
     with open("tokenizer.pkl", "rb") as f:
         tokenizer = pickle.load(f)
     with open("label_encoder.pkl", "rb") as f:
-        label_encoder = pickle.load(f)
+        label_encoder = pickle.load(f)  
     return model, tokenizer, label_encoder
 
 model, tokenizer, label_encoder = load_resources()
@@ -59,6 +59,8 @@ if "predictions" not in st.session_state:
     st.session_state.predictions = []
 if "questions_model" not in st.session_state:
     st.session_state.questions_model = []
+if "result_maltu" not in st.session_state:
+    st.session_state.result_maltu = []
 
 # ================================
 # 타이틀 및 소개
@@ -120,12 +122,48 @@ else:
         prediction = st.session_state.predictions[idx]
         label = label_encoder.inverse_transform([np.argmax(prediction)])[0]
         confidence = np.max(prediction) * 100
+        st.session_state.result_maltu.append(str(label))
+        
 
         st.markdown(f"### {idx + 1}. {st.session_state.questions_model[idx]}")
         st.markdown(f"- ✍️ 당신의 답: `{response}`")
         st.markdown(f"- 🔎 예측된 말투 스타일: **{label}** ({confidence:.2f}%)")
+
+        print(label)
+
+        st.header(f"{label}") #이콤시의 조언
+
+        if label == "친근형":
+            st.markdown("<이콤시의 설명>")
+            st.markdown("당신은 [친근형] 입니다!")
+
+        elif label == " 친근형":
+            st.markdown("<이콤시의 설명>")
+            st.markdown("당신은 [친근형] 입니다!")
+
+        elif label == "귀찮음형":
+            st.markdown("<이콤시의 설명>")
+            st.markdown("당신은 [귀찮음형] 입니다!")
+
+        elif label == "욕쟁이형":
+            st.markdown("<이콤시의 설명>")
+            st.markdown("당신은 [욕쟁이형] 입니다!")
+
+        elif label == "까칠형":
+            st.markdown("<이콤시의 설명>")
+            st.markdown("당신은 [까칠형] 입니다!")
+
+        elif label == "공감형":
+            st.markdown("<이콤시의 설명>")
+            st.markdown("당신은 [공감형] 입니다!")
+
         st.progress(int(confidence))
         st.markdown("---")
+
+    st.header("1.",str(st.session_state.result_maltu[0]))
+    st.header("2.",str(st.session_state.result_maltu[0]))
+    st.header("3.",str(st.session_state.result_maltu[0]))
+
 
     # ================================
     # 테스트 재시작
@@ -137,47 +175,3 @@ else:
         st.rerun()
 
 
-# questions = ["오늘 기분 어때?",
-#              "학교에서 선생님한테 혼났어ㅠㅠ 위로해줘ㅠㅠ",
-#              "나 상장 받았다! 축하해줘!"]
-
-# # tab1, tab2, tab3 = st.tabs(["말투 분석 프로그램📈", "소개글", "프로그램 제작 코드"])
-
-# # ==========================
-# # 데이터 및 모델 준비
-# # ==========================
-
-# @st.cache_resource
-# def load_resources():
-#     model = load_model("mal_tu_model.h5")
-#     with open("tokenizer.pkl", "rb") as f:
-#         tokenizer = pickle.load(f)
-#     with open("label_encoder.pkl", "rb") as f:
-#         label_encoder = pickle.load(f)
-#     return model, tokenizer, label_encoder
-
-# model, tokenizer, label_encoder = load_resources()
-
-# # ==========================
-# # Streamlit UI
-# # ==========================
-# if "test_bool" not in st.session_state:
-#     st.session_state.test_bool = False
-
-# if st.session_state.test_bool == False:
-#     for i in range(2): #줄바꿈
-#         st.title(" ")
-#     st.markdown("<h1 style='text-align: center;'>💬 채팅 말투 분석기🔍</h1>", unsafe_allow_html=True)
-#     st.markdown("<h1 style='text-align: center; font-size: 24px;'>질문에 대한 답을 입력하세요!</h1>", unsafe_allow_html=True)
-#     if st.button("-----------------------------------------------------<테스트 시작>---------------------------------------------------------------"):
-#         st.session_state.test_bool = True
-
-# if st.session_state.test_bool == True:
-
-#     user_input = st.text_input("채팅 문장을 입력해보세요:")
-#     if user_input:
-#         seq = tokenizer.texts_to_sequences([user_input])
-#         padded = pad_sequences(seq, maxlen=30, padding='post')
-#         pred = model.predict(padded)
-#         label = label_encoder.inverse_transform([np.argmax(pred)])
-#         st.success(f"예측된 말투 스타일: **{label[0]}**")

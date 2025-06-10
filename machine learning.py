@@ -32,7 +32,7 @@ model = Sequential([
     Dense(num_classes, activation='softmax')
 ])
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-model.fit(padded, y, epochs=300, verbose=1)
+model.fit(padded, y, epochs=10000, verbose=1)
 
 # 모델 저장
 model.save("말투학습모델.h5")
